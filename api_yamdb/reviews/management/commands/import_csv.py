@@ -2,6 +2,7 @@ from csv import reader
 from importlib import import_module
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Model
 from django.db.models.fields.related import RelatedField
 
 APP_MODELS = "reviews.models"
@@ -16,16 +17,13 @@ class Command(BaseCommand):
             "model_name", type=str, help="specify model name to import"
         )
 
-    def handle(self, *args, **options):
-
-        model_name = options.get("model_name")
-
+    def _get_model(self, model_name: str, verbosity: int = 1) -> Model:
         try:
             module = import_module(APP_MODELS)
         except ModuleNotFoundError:
             raise CommandError(f"Modue '{APP_MODELS}' not found!")
 
-        if options.get("verbosity") > 1:
+        if verbosity > 1:
             self.stdout.write(f"Importing module {module}")
 
         try:
@@ -35,8 +33,15 @@ class Command(BaseCommand):
                 f"Model '{model_name}' not found in module '{module}'!"
             )
 
-        if options.get("verbosity") > 1:
+        if verbosity > 1:
             self.stdout.write(f"Using model {model}")
+
+        return model
+
+    def handle(self, *args, **options):
+
+        model_name = options.get("model_name")
+        model = self._get_model(model_name, options["verbosity"])
 
         related_fields = {
             field.name
