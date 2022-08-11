@@ -27,9 +27,9 @@ class GenreTitleAdmin(admin.ModelAdmin):
     ...
 
 
-admin.site.register(Review, ReviewAdmin)
-admin.site.register(Comment, CommentAdmin)
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(Title, TitleAdmin)
+admin.site.register(Comment, CommentAdmin)
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(GenreTitle, GenreTitleAdmin)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Title, TitleAdmin)
