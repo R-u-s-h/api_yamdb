@@ -1,11 +1,9 @@
-from rest_framework import viewsets
-
 from api.serializers import (
     CategorySerializer,
     GenreSerializer,
     TitleSerializer,
 )
-
+from rest_framework import viewsets
 from reviews.models import Category, Genre, Title
 
 

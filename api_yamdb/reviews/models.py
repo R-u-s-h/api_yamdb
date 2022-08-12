@@ -48,7 +48,10 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         validators=[
-            MinValueValidator(-10000),
+            # Древнейшие:
+            # - книга — "Эпос о Гильгамеше", ~2200 г. до н.э.
+            # - муз. произведение — Гимн богине Никкал, ~1400 г. до н.э.
+            MinValueValidator(-2500),
             MaxValueValidator(2050),
         ],
         verbose_name="Год выпуска",
@@ -56,7 +59,8 @@ class Title(models.Model):
     )
     category = models.ForeignKey(
         Category,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
         related_name="titles",
         verbose_name="Категория",
         help_text="Укажите категорию",
