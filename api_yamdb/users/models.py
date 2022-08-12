@@ -14,6 +14,6 @@ role_choices = [
 
 class User(AbstractUser):
     bio = models.TextField(
-        'Биография',
+        "Биография",
         blank=True,
     )
