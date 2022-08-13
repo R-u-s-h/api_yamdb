@@ -40,8 +40,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        model_name = options.get("model_name")
-        model = self._get_model(model_name, options["verbosity"])
+        model = self._get_model(options["model_name"], options["verbosity"])
 
         related_fields = {
             field.name
@@ -54,13 +53,25 @@ class Command(BaseCommand):
             csv_reader = reader(csv_file)
 
             for field_name in csv_reader.__next__():
-                if field_name in related_fields:
+                if field_name in related_fields and not field_name.endswith(
+                    "_id"
+                ):
                     field_name += "_id"
                 field_names.append(field_name)
 
             for row in csv_reader:
                 fields = dict(zip(field_names, row))
-                instance, status = model.objects.update_or_create(**fields)
+                try:
+                    instance, status = model.objects.update_or_create(**fields)
+                except Exception as e:
+                    if options.get("verbosity") > 1:
+                        self.stdout.write(
+                            self.style.ERROR(
+                                f"Can't create or update model instance: {e}"
+                            )
+                        )
+                    continue
+
                 if options.get("verbosity") > 1:
                     action = "Updated"
                     if status:
