@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from reviews.models import Category, Genre, Review, Title
 
-from .permissions import IsAdmin, IsModerator, IsOwnerOrReadOnly
+from .permissions import IsAdmin, IsModerator, IsOwner, ReadOnly
 from .serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -30,7 +30,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [IsOwnerOrReadOnly | IsAdmin | IsModerator]
+    permission_classes = [IsOwner | IsModerator | IsAdmin | ReadOnly]
     pagination_class = LimitOffsetPagination
 
     def get_queryset(self, *args, **kwargs):
