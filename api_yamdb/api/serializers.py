@@ -70,15 +70,6 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ("name", "slug")
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=False, read_only=False)
-    genre = GenreSerializer(many=True, read_only=False)
-
-    class Meta:
-        model = Title
-        fields = ("id", "name", "year", "description", "genre", "category")
-
-
 class ReviewSerializer(serializers.ModelSerializer):
     author = relations.SlugRelatedField(
         required=False, read_only=True, slug_field="username"
@@ -95,6 +86,18 @@ class ReviewSerializer(serializers.ModelSerializer):
                 "на произведение",
             )
         ]
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(many=False, read_only=False)
+    genre = GenreSerializer(many=True, read_only=False)
+    rating = ReviewSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Title
+        fields = (
+            "id", "name", "year", "rating", "description", "genre", "category"
+        )
 
 
 class CommentSerializer(serializers.ModelSerializer):
