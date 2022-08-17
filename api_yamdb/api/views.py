@@ -25,17 +25,19 @@ from .serializers import (
 )
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+    permission_classes = (IsAdmin, ReadOnly)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("slug",)
     pagination_class = LimitOffsetPagination
 
 
-class GenreViewSet(viewsets.ReadOnlyModelViewSet):
+class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
+    permission_classes = (IsAdmin, ReadOnly)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("slug",)
     pagination_class = LimitOffsetPagination
@@ -44,6 +46,7 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
+    permission_classes = (IsAdmin, ReadOnly)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("name", "year", "category__slug", "genre__slug")
     pagination_class = LimitOffsetPagination

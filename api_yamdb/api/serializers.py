@@ -1,4 +1,5 @@
 from rest_framework import relations, serializers, validators
+from django.core.validators import RegexValidator
 from reviews.models import User, Category, Comment, Genre, Review, Title
 
 
@@ -42,6 +43,19 @@ class UserSignupConfirmSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     queryset = Category.objects.all()
+    name = serializers.CharField(
+        max_length=256
+    )
+    slug = serializers.SlugField(
+        max_length=50,
+        validators=[
+            validators.UniqueValidator(queryset),
+            RegexValidator(
+                regex=r'^[-a-zA-Z0-9_]+$',
+                message=('Slug должен быть буквенно-цифровым'),
+            )
+        ]
+    )
 
     class Meta:
         model = Category
@@ -62,7 +76,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ("id", "name", "year", "genre", "category")
+        fields = ("id", "name", "year", "description", "genre", "category")
 
 
 class ReviewSerializer(serializers.ModelSerializer):
