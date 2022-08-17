@@ -174,3 +174,6 @@ Session.vim
 tags
 # Persistent undo
 [._]*.un~
+
+# Rest api requests
+requests.http
