@@ -1,7 +1,11 @@
+from django.conf.urls import url
 from django.urls import include, path
 from rest_framework import routers
 
 from .views import (
+    UserViewSet,
+    signup,
+    signup_confirm,
     CategoryViewSet,
     CommentViewSet,
     GenreViewSet,
@@ -23,7 +27,14 @@ v1_router.register(
     CommentViewSet,
     basename="api-comments",
 )
+v1_router.register("users", UserViewSet, basename="api-users")
+
+auth_urls = [
+    url('token/', signup_confirm),
+    url('signup/', signup),
+]
 
 urlpatterns = [
+    path("v1/auth/", include(auth_urls)),
     path("v1/", include(v1_router.urls)),
 ]
