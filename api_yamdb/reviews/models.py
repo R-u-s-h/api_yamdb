@@ -11,6 +11,7 @@ class Category(models.Model):
     )
     slug = models.SlugField(
         unique=True,
+        max_length=50,
         help_text="Задайте slug",
     )
 
@@ -30,6 +31,7 @@ class Genre(models.Model):
     )
     slug = models.SlugField(
         unique=True,
+        max_length=50,
         help_text="Задайте slug",
     )
 
@@ -45,6 +47,7 @@ class Title(models.Model):
     name = models.TextField(
         verbose_name="Название произведения",
         help_text="Введите название произведения",
+        null=False,
     )
     year = models.IntegerField(
         validators=[
@@ -70,6 +73,11 @@ class Title(models.Model):
         through="GenreTitle",
         verbose_name="Жанр",
         help_text="Укажите жанр",
+    )
+    description = models.TextField(
+        null=True,
+        verbose_name="Текст отзыва",
+        help_text="Напишите отзыв",
     )
 
     def __str__(self):
