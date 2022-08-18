@@ -30,7 +30,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     permission_classes = (IsAdmin, ReadOnly)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ("slug",)
+    search_fields = ("name",)
     pagination_class = LimitOffsetPagination
 
 
@@ -39,7 +39,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     permission_classes = (IsAdmin, ReadOnly)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ("slug",)
+    search_fields = ("name",)
     pagination_class = LimitOffsetPagination
 
 
