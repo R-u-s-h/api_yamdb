@@ -6,12 +6,12 @@ from rest_framework import filters, viewsets, status, serializers
 from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import action, api_view
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import User, Category, Comment, Genre, Review, Title
 
-from .permissions import IsAdmin, IsModerator, IsOwner, ReadOnly
+from .permissions import IsAdmin, IsModerator, IsOwner, ReadOnly, IsAdminV2, ReadOnlyV2
 from .serializers import (
     UserSerializer,
     UserEditSerializer,
@@ -28,7 +28,7 @@ from .serializers import (
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-    permission_classes = (IsAdmin, ReadOnly)
+    permission_classes = (ReadOnly, IsAdminV2)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
     pagination_class = LimitOffsetPagination
@@ -37,7 +37,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
-    permission_classes = (IsAdmin, ReadOnly)
+    permission_classes = (ReadOnly, IsAdminV2)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
     pagination_class = LimitOffsetPagination
