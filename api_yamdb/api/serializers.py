@@ -6,7 +6,9 @@ from reviews.models import User, Category, Comment, Genre, Review, Title
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("username", "email", "first_name", "last_name", "bio", "role")
+        fields = (
+            "username", "email", "first_name", "last_name", "bio", "role"
+        )
 
 
 class UserEditSerializer(serializers.ModelSerializer):
@@ -16,7 +18,9 @@ class UserEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("username", "email", "first_name", "last_name", "bio", "role")
+        fields = (
+            "username", "email", "first_name", "last_name", "bio", "role"
+        )
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
