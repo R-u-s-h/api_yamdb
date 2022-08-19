@@ -1,13 +1,18 @@
-from rest_framework import relations, serializers, validators
 from django.core.validators import RegexValidator
-from reviews.models import User, Category, Comment, Genre, Review, Title
+from rest_framework import relations, serializers, validators
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "username", "email", "first_name", "last_name", "bio", "role"
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "role",
         )
 
 
@@ -19,12 +24,16 @@ class UserEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "username", "email", "first_name", "last_name", "bio", "role"
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "role",
         )
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ("username", "email")
@@ -47,18 +56,16 @@ class UserSignupConfirmSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     queryset = Category.objects.all()
-    name = serializers.CharField(
-        max_length=256
-    )
+    name = serializers.CharField(max_length=256)
     slug = serializers.SlugField(
         max_length=50,
         validators=[
             validators.UniqueValidator(queryset),
             RegexValidator(
-                regex=r'^[-a-zA-Z0-9_]+$',
-                message=('Slug должен быть буквенно-цифровым'),
-            )
-        ]
+                regex=r"^[-a-zA-Z0-9_]+$",
+                message=("Slug должен быть буквенно-цифровым"),
+            ),
+        ],
     )
 
     class Meta:
@@ -76,26 +83,26 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = relations.SlugRelatedField(
-        required=False, read_only=True, slug_field="username"
+        required=False,
+        read_only=True,
+        slug_field="username",
+        default=serializers.CurrentUserDefault(),
+    )
+    title = relations.SlugRelatedField(
+        required=False,
+        read_only=True,
+        slug_field="name",
     )
 
     class Meta:
         model = Review
-        fields = ("id", "text", "author", "score", "pub_date")
-        validators = [
-            validators.UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=["author", "title"],
-                message="Пользователь может оставить только один отзыв "
-                "на произведение",
-            )
-        ]
+        fields = ("id", "text", "author", "score", "pub_date", "title")
 
 
 class RatingSerializer(serializers.RelatedField):
     class Meta:
         model = Review
-        fields = ("score")
+        fields = ("score",)
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -105,9 +112,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = (
-            "id", "name", "year", "description", "genre", "category"
-        )
+        fields = ("id", "name", "year", "description", "genre", "category")
 
 
 class CommentSerializer(serializers.ModelSerializer):

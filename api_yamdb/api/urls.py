@@ -3,14 +3,14 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views import (
-    UserViewSet,
-    signup,
-    signup_confirm,
     CategoryViewSet,
     CommentViewSet,
     GenreViewSet,
     ReviewViewSet,
     TitleViewSet,
+    UserViewSet,
+    signup,
+    signup_confirm,
 )
 
 v1_router = routers.DefaultRouter()
@@ -30,8 +30,8 @@ v1_router.register(
 v1_router.register("users", UserViewSet, basename="api-users")
 
 auth_urls = [
-    url('token/', signup_confirm),
-    url('signup/', signup),
+    url("token/", signup_confirm),
+    url("signup/", signup),
 ]
 
 urlpatterns = [

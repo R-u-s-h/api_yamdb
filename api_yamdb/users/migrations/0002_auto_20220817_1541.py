@@ -6,18 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0001_initial'),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='role',
-            field=models.TextField(choices=[('user', 'user'), ('moderator', 'moderator'), ('admin', 'admin')], default='user', verbose_name='Роль'),
+            model_name="user",
+            name="role",
+            field=models.TextField(
+                choices=[
+                    ("user", "user"),
+                    ("moderator", "moderator"),
+                    ("admin", "admin"),
+                ],
+                default="user",
+                verbose_name="Роль",
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='email',
-            field=models.EmailField(max_length=254, unique=True, verbose_name='email address'),
+            model_name="user",
+            name="email",
+            field=models.EmailField(
+                max_length=254, unique=True, verbose_name="email address"
+            ),
         ),
     ]
