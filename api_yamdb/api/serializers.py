@@ -99,20 +99,25 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date", "title")
 
 
-class RatingSerializer(serializers.RelatedField):
-    class Meta:
-        model = Review
-        fields = ("score",)
-
-
 class TitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=False, read_only=False)
-    genre = GenreSerializer(many=True, read_only=False)
-    # rating = RatingSerializer(many=True, read_only=True)
+    category = CategorySerializer(many=False, read_only=True)
+    genre = GenreSerializer(many=True, read_only=True)
+    rating = serializers.SerializerMethodField()
+
+    def get_rating(self, obj):
+        return obj.get_rating().get("rating", 0)
 
     class Meta:
         model = Title
-        fields = ("id", "name", "year", "description", "genre", "category")
+        fields = (
+            "id",
+            "name",
+            "rating",
+            "year",
+            "description",
+            "genre",
+            "category",
+        )
 
 
 class CommentSerializer(serializers.ModelSerializer):

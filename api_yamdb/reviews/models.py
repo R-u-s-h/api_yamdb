@@ -83,6 +83,9 @@ class Title(models.Model):
     def __str__(self):
         return self.name
 
+    def get_rating(self):
+        return self.reviews.aggregate(rating=models.Avg("score"))
+
     class Meta:
         verbose_name = "Название произведения"
         verbose_name_plural = "Названия произведений"
@@ -131,6 +134,7 @@ class Review(models.Model):
     )
     title = models.ForeignKey(
         Title,
+        related_name="reviews",
         on_delete=models.CASCADE,
         verbose_name="Произведение",
         help_text="Произведение",
