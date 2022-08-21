@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, serializers, status, viewsets
+from rest_framework import filters, serializers, status, viewsets, mixins
 from rest_framework.decorators import action, api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
@@ -18,6 +18,7 @@ from .permissions import (
     IsOwner,
     PermissionPerMethodMixin,
     ReadOnly,
+    ReadOnlyV2,
 )
 from .serializers import (
     CategorySerializer,
@@ -25,6 +26,7 @@ from .serializers import (
     GenreSerializer,
     ReviewSerializer,
     TitleSerializer,
+    TitleCreateSerializer,
     UserEditSerializer,
     UserSerializer,
     UserSignupConfirmSerializer,
@@ -32,31 +34,63 @@ from .serializers import (
 )
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class ListCreateDestroyViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    pass
+
+
+class CategoryViewSet(PermissionPerMethodMixin, ListCreateDestroyViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-    permission_classes = (ReadOnly, IsAdminV2)
+    lookup_field = 'slug'
+    permission_classes = [IsAdminV2 | ReadOnlyV2]
+    permission_classes_per_method = {
+        "list": [ReadOnlyV2],
+        "create": [IsAdminV2],
+        "destroy": [IsAdminV2],
+    }
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
     pagination_class = LimitOffsetPagination
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(PermissionPerMethodMixin, ListCreateDestroyViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
-    permission_classes = (ReadOnly, IsAdminV2)
+    lookup_field = 'slug'
+    permission_classes = [IsAdminV2 | ReadOnlyV2]
+    permission_classes_per_method = {
+        "list": [ReadOnlyV2],
+        "create": [IsAdminV2],
+        "destroy": [IsAdminV2],
+    }
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
     pagination_class = LimitOffsetPagination
 
 
-class TitleViewSet(viewsets.ModelViewSet):
+class TitleViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
-    permission_classes = (IsAdmin, ReadOnly)
+    permission_classes = [IsAdminV2 | ReadOnlyV2]
+    permission_classes_per_method = {
+        "list": [ReadOnlyV2],
+        "update": [IsAdminV2],
+        "create": [IsAdminV2],
+        "destroy": [IsAdminV2],
+    }
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("name", "year", "category__slug", "genre__slug")
     pagination_class = LimitOffsetPagination
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve' or self.action == 'list':
+            return TitleSerializer
+        return TitleCreateSerializer
 
 
 class ReviewViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
