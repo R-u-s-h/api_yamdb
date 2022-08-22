@@ -54,7 +54,6 @@ class CategoryGenreFilter(filters.FilterSet):
     )
     genre = CharFilterInFilter(field_name='genre__slug', lookup_expr='in')
     year = filters.NumberFilter(field_name='year', lookup_expr='contains')
-    # name = CharFilterInFilter(field_name='name', lookup_expr='in')
     name = filters.Filter(field_name='name', lookup_expr='icontains')
 
     class Meta:
