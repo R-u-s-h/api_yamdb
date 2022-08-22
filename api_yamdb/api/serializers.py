@@ -1,6 +1,6 @@
 from django.core.validators import RegexValidator
 from rest_framework import relations, serializers, validators
-from reviews.models import (  # GenreTitle,
+from reviews.models import (
     Category,
     Comment,
     Genre,

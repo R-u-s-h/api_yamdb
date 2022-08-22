@@ -2,7 +2,9 @@ from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, serializers, status, viewsets
+from django_filters import rest_framework as filters
+from rest_framework import mixins, serializers, status, viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.decorators import action, api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
@@ -41,6 +43,24 @@ class ListCreateDestroyViewSet(
     pass
 
 
+class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
+    pass
+
+
+class CategoryGenreFilter(filters.FilterSet):
+    category = CharFilterInFilter(
+        field_name='category__slug',
+        lookup_expr='in'
+    )
+    genre = CharFilterInFilter(field_name='genre__slug', lookup_expr='in')
+    year = filters.NumberFilter(field_name='year', lookup_expr='contains')
+    name = filters.Filter(field_name='name', lookup_expr='icontains')
+
+    class Meta:
+        model = Title
+        fields = ['category', 'genre', 'year', 'name']
+
+
 class CategoryViewSet(PermissionPerMethodMixin, ListCreateDestroyViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
@@ -50,7 +70,7 @@ class CategoryViewSet(PermissionPerMethodMixin, ListCreateDestroyViewSet):
         "create": [IsAdmin],
         "destroy": [IsAdmin],
     }
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (SearchFilter,)
     search_fields = ("name",)
     pagination_class = LimitOffsetPagination
 
@@ -64,7 +84,7 @@ class GenreViewSet(PermissionPerMethodMixin, ListCreateDestroyViewSet):
         "create": [IsAdmin],
         "destroy": [IsAdmin],
     }
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (SearchFilter,)
     search_fields = ("name",)
     pagination_class = LimitOffsetPagination
 
@@ -79,6 +99,7 @@ class TitleViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
         "destroy": [IsAdmin],
     }
     filter_backends = (DjangoFilterBackend,)
+    filterset_class = CategoryGenreFilter
     filterset_fields = ("name", "year", "category__slug", "genre__slug")
     pagination_class = LimitOffsetPagination
 
