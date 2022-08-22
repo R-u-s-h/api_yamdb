@@ -29,6 +29,9 @@ class PermissionPerMethodMixin:
 
 
 class ReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS
+
     def has_object_permission(self, request, view, obj):
         return request.method in permissions.SAFE_METHODS
 
@@ -44,6 +47,13 @@ class IsOwner(permissions.BasePermission):
 
 
 class IsAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and request.user.role == "admin"
+        )
+
     def has_object_permission(self, request, view, obj):
         return bool(
             request.user
@@ -53,26 +63,16 @@ class IsAdmin(permissions.BasePermission):
 
 
 class IsModerator(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         return bool(
             request.user
             and request.user.is_authenticated
             and request.user.role == "moderator"
         )
 
-
-class IsAdminV2(permissions.BasePermission):
-    def has_permission(self, request, view):
+    def has_object_permission(self, request, view, obj):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.role == "admin"
-        )
-
-
-class ReadOnlyV2(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return (
-            request.method in permissions.SAFE_METHODS
-            or request.user.is_authenticated
+            and request.user.role == "moderator"
         )
