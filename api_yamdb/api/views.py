@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, serializers, status, viewsets
-from rest_framework.filters import SearchFilter
 from rest_framework.decorators import action, api_view
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -49,16 +49,15 @@ class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
 
 class CategoryGenreFilter(filters.FilterSet):
     category = CharFilterInFilter(
-        field_name='category__slug',
-        lookup_expr='in'
+        field_name="category__slug", lookup_expr="in"
     )
-    genre = CharFilterInFilter(field_name='genre__slug', lookup_expr='in')
-    year = filters.NumberFilter(field_name='year', lookup_expr='contains')
-    name = filters.Filter(field_name='name', lookup_expr='icontains')
+    genre = CharFilterInFilter(field_name="genre__slug", lookup_expr="in")
+    year = filters.NumberFilter(field_name="year", lookup_expr="contains")
+    name = filters.Filter(field_name="name", lookup_expr="icontains")
 
     class Meta:
         model = Title
-        fields = ['category', 'genre', 'year', 'name']
+        fields = ["category", "genre", "year", "name"]
 
 
 class CategoryViewSet(PermissionPerMethodMixin, ListCreateDestroyViewSet):
