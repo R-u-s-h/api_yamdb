@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action, api_view
@@ -12,6 +11,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Comment, Genre, Review, Title, User
+from api.filters import CategoryGenreFilter
 
 from .permissions import (
     IsAdmin,
@@ -43,31 +43,14 @@ class ListCreateDestroyViewSet(
     pass
 
 
-class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
-    pass
-
-
-class CategoryGenreFilter(filters.FilterSet):
-    category = CharFilterInFilter(
-        field_name="category__slug", lookup_expr="in"
-    )
-    genre = CharFilterInFilter(field_name="genre__slug", lookup_expr="in")
-    year = filters.NumberFilter(field_name="year", lookup_expr="contains")
-    name = filters.Filter(field_name="name", lookup_expr="icontains")
-
-    class Meta:
-        model = Title
-        fields = ["category", "genre", "year", "name"]
-
-
 class CategoryViewSet(PermissionPerMethodMixin, ListCreateDestroyViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     lookup_field = "slug"
     permission_classes_per_method = {
-        "list": [ReadOnly],
-        "create": [IsAdmin],
-        "destroy": [IsAdmin],
+        "list": (ReadOnly,),
+        "create": (IsAdmin,),
+        "destroy": (IsAdmin,),
     }
     filter_backends = (SearchFilter,)
     search_fields = ("name",)
@@ -79,9 +62,9 @@ class GenreViewSet(PermissionPerMethodMixin, ListCreateDestroyViewSet):
     queryset = Genre.objects.all()
     lookup_field = "slug"
     permission_classes_per_method = {
-        "list": [ReadOnly],
-        "create": [IsAdmin],
-        "destroy": [IsAdmin],
+        "list": (ReadOnly,),
+        "create": (IsAdmin,),
+        "destroy": (IsAdmin,),
     }
     filter_backends = (SearchFilter,)
     search_fields = ("name",)
@@ -92,14 +75,14 @@ class TitleViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     queryset = Title.objects.all()
     permission_classes_per_method = {
-        "list": [ReadOnly],
-        "partial_update": [IsAdmin],
-        "create": [IsAdmin],
-        "destroy": [IsAdmin],
+        "list": (ReadOnly,),
+        "partial_update": (IsAdmin,),
+        "create": (IsAdmin,),
+        "destroy": (IsAdmin,),
     }
     filter_backends = (DjangoFilterBackend,)
     filterset_class = CategoryGenreFilter
-    filterset_fields = ("name", "year", "category__slug", "genre__slug")
+    filterset_fields = ("name", "year", "category__slug", "genre__slug",)
     pagination_class = LimitOffsetPagination
 
     def get_serializer_class(self):
@@ -112,11 +95,11 @@ class ReviewViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
     permission_classes_per_method = {
-        "create": [IsAuthenticated],
-        "list": [ReadOnly],
-        "retrieve": [ReadOnly],
-        "partial_update": [IsOwner | IsModerator | IsAdmin],
-        "destroy": [IsOwner | IsModerator | IsAdmin],
+        "create": (IsAuthenticated,),
+        "list": (ReadOnly,),
+        "retrieve": (ReadOnly,),
+        "partial_update": (IsOwner | IsModerator | IsAdmin,),
+        "destroy": (IsOwner | IsModerator | IsAdmin,),
     }
 
     def get_queryset(self, *args, **kwargs):
@@ -144,11 +127,11 @@ class CommentViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = LimitOffsetPagination
     permission_classes_per_method = {
-        "create": [IsAuthenticated],
-        "list": [ReadOnly],
-        "retrieve": [ReadOnly],
-        "partial_update": [IsOwner | IsModerator | IsAdmin],
-        "destroy": [IsOwner | IsModerator | IsAdmin],
+        "create": (IsAuthenticated,),
+        "list": (ReadOnly,),
+        "retrieve": (ReadOnly,),
+        "partial_update": (IsOwner | IsModerator | IsAdmin,),
+        "destroy": (IsOwner | IsModerator | IsAdmin,),
     }
 
     def get_queryset(self, *args, **kwargs):
@@ -167,15 +150,15 @@ class CommentViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdmin | IsAdminUser]
+    permission_classes = (IsAdmin | IsAdminUser,)
     pagination_class = LimitOffsetPagination
     search_fields = ("username",)
     lookup_field = "username"
 
     @action(
         detail=False,
-        methods=["get", "patch"],
-        permission_classes=[IsAuthenticated],
+        methods=("get", "patch",),
+        permission_classes=(IsAuthenticated,),
     )
     def me(self, request):
         if request.method == "PATCH":
