@@ -15,12 +15,12 @@ class Category(models.Model):
         help_text="Задайте slug",
     )
 
-    def __str__(self):
-        return self.slug
-
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
+
+    def __str__(self):
+        return self.slug
 
 
 class Genre(models.Model):
@@ -35,12 +35,12 @@ class Genre(models.Model):
         help_text="Задайте slug",
     )
 
-    def __str__(self):
-        return self.slug
-
     class Meta:
         verbose_name = "Жанр"
         verbose_name_plural = "Жанры"
+
+    def __str__(self):
+        return self.slug
 
 
 class Title(models.Model):
@@ -49,7 +49,7 @@ class Title(models.Model):
         help_text="Введите название произведения",
         null=False,
     )
-    year = models.IntegerField(
+    year = models.SmallIntegerField(
         validators=[
             # Древнейшие:
             # - книга — "Эпос о Гильгамеше", ~2200 г. до н.э.
@@ -80,15 +80,15 @@ class Title(models.Model):
         help_text="Напишите отзыв",
     )
 
+    class Meta:
+        verbose_name = "Название произведения"
+        verbose_name_plural = "Названия произведений"
+
     def __str__(self):
         return self.name
 
     def get_rating(self):
         return self.reviews.aggregate(rating=models.Avg("score"))
-
-    class Meta:
-        verbose_name = "Название произведения"
-        verbose_name_plural = "Названия произведений"
 
 
 class GenreTitle(models.Model):
@@ -117,7 +117,7 @@ class Review(models.Model):
         verbose_name="Дата и время публикации отзыва",
         help_text="Дата и время публикации отзыва (автоматическое поле)",
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(10),
@@ -140,9 +140,6 @@ class Review(models.Model):
         help_text="Произведение",
     )
 
-    def __str__(self):
-        return self.text[:25]
-
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
@@ -151,6 +148,9 @@ class Review(models.Model):
                 fields=["author", "title"], name="author_title"
             )
         ]
+
+    def __str__(self):
+        return self.text[:25]
 
 
 class Comment(models.Model):
@@ -177,9 +177,9 @@ class Comment(models.Model):
         help_text="Укажите комментируемый отзыв",
     )
 
-    def __str__(self):
-        return self.text[:25]
-
     class Meta:
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
+
+    def __str__(self):
+        return self.text[:25]
