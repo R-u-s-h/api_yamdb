@@ -30,21 +30,22 @@ class TitleAdmin(admin.ModelAdmin):
         "genre__name",
         "genre__slug",
     )
+    list_display_links = ("pk",)
 
 
 @admin.register(GenreTitle)
 class GenreTitleAdmin(admin.ModelAdmin):
-    list_display = ("genre", "title")
-    list_display_links = ("genre", "title")
+    list_display = ("pk", "genre", "title")
+    list_display_links = ("pk", "genre", "title")
 
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ("title", "text", "pub_date", "score", "author")
-    list_display_links = ("title", "text", "pub_date", "score", "author")
+    list_display = ("pk", "title", "text", "pub_date", "score", "author")
+    list_display_links = ("pk", "title", "text", "pub_date", "score", "author")
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("review", "text", "pub_date", "author")
-    list_display_links = ("review", "text", "pub_date", "author")
+    list_display = ("pk", "review", "text", "pub_date", "author")
+    list_display_links = ("pk", "review", "text", "pub_date", "author")
