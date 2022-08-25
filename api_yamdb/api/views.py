@@ -1,3 +1,4 @@
+from api.filters import CategoryGenreFilter
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -7,11 +8,10 @@ from rest_framework.decorators import action, api_view
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Comment, Genre, Review, Title, User
-from api.filters import CategoryGenreFilter
 
 from .permissions import (
     IsAdmin,
@@ -82,7 +82,12 @@ class TitleViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
     }
     filter_backends = (DjangoFilterBackend,)
     filterset_class = CategoryGenreFilter
-    filterset_fields = ("name", "year", "category__slug", "genre__slug",)
+    filterset_fields = (
+        "name",
+        "year",
+        "category__slug",
+        "genre__slug",
+    )
     pagination_class = LimitOffsetPagination
 
     def get_serializer_class(self):
@@ -150,14 +155,17 @@ class CommentViewSet(PermissionPerMethodMixin, viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAdmin | IsAdminUser,)
+    permission_classes = (IsAdmin,)
     pagination_class = LimitOffsetPagination
     search_fields = ("username",)
     lookup_field = "username"
 
     @action(
         detail=False,
-        methods=("get", "patch",),
+        methods=(
+            "get",
+            "patch",
+        ),
         permission_classes=(IsAuthenticated,),
     )
     def me(self, request):

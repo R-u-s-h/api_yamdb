@@ -2,15 +2,7 @@ from rest_framework import permissions
 
 
 class PermissionPerMethodMixin:
-    """Allows to use separate permission class set for each method
-
-    `PermissionPerMethodMixin` changes DRF's permission process.
-    It checks if method exists in `permission_classes_per_method` attribute.
-    If so this mixin sets `self.permission_classes` to value associated to
-    method in `permission_classes_per_method`.
-
-    Thereby, it helps to define all permission policies in the same place.
-    """
+    """Allows to use detached permission class set for each method"""
 
     def check_permissions(self, request):
 
@@ -51,14 +43,14 @@ class IsAdmin(permissions.BasePermission):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.role == "admin"
+            and request.user.is_admin
         )
 
     def has_object_permission(self, request, view, obj):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.role == "admin"
+            and request.user.is_admin
         )
 
 
@@ -67,12 +59,12 @@ class IsModerator(permissions.BasePermission):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.role == "moderator"
+            and request.user.is_moderator
         )
 
     def has_object_permission(self, request, view, obj):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.role == "moderator"
+            and request.user.is_moderator
         )
